@@ -1,10 +1,13 @@
 # Deals with the logic of the asteroids bullet.
 # @author Miłosz Osiński <milosz@icoded.com>
 
+require 'ostruct'
+PATH = File.dirname(__FILE__)
+
 class Bullet < Square
   DEFAULTS = { speed: 1 }.freeze
 
-  attr_accessor :angle, :speed, :scored
+  attr_accessor :angle, :speed, :scored, :sounds
 
   # @api public
   # @param speed [Integer, Float, nil] speed's speed
@@ -16,6 +19,12 @@ class Bullet < Square
     @scored = []
     @angle = (angle - 90) * Math::PI / 180
     @speed = speed
+    @sounds = OpenStruct.new(
+      fire: Sound.new(Dir.pwd + '/assets/sounds/fire.wav'),
+      score: Sound.new(Dir.pwd + '/assets/sounds/bangLarge.wav')
+    )
+
+    fire
   end
 
   # @api public
@@ -30,10 +39,15 @@ class Bullet < Square
       self.scored = asteroid_collision?(asteroids)
       self.remove
       self.size = 0
+      sounds.score.play
     end
 
     self.x += Math.cos(self.angle) * speed;
     self.y += Math.sin(self.angle) * speed;
+  end
+
+  def fire
+    sounds.fire.play
   end
 
   private

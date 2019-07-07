@@ -14,6 +14,22 @@ set title: 'Asteroids',
     resizable: false
 
 ##
+# Score
+##
+
+score = 0
+
+score_text = Text.new(
+  "%03d" % score,
+  x: 10,
+  y: 10,
+  font: 'assets/fonts/Audiowide.ttf',
+  color: 'white',
+  size: 20,
+  opacity: 1
+)
+
+##
 # Bullets
 ##
 
@@ -57,11 +73,15 @@ update do
   end
 
   bullets.each do |bullet|
-    bullet.scored.each do |asteroid|
+    if asteroid = bullet.scored.first
       asteroid.source.remove
       asteroids.delete(asteroid)
+      score += 20
+      score_text.text = "%03d" % score
+      bullets.delete(bullet)
+    else
+      bullet.move(window: get(:window), asteroids: asteroids)
     end
-    bullet.move(window: get(:window), asteroids: asteroids)
   end
 
   asteroids.each do |asteroid|
